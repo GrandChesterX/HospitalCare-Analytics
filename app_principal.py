@@ -19,11 +19,11 @@ if archivo_subido is not None:
     except ValueError as e:
         st.error(f"❌ Error en los datos: {e}")
 else:
-    st.info("Porfavor sube el archivo CVS")
+    st.info("Porfavor sube el archivo CSV")
 
 
 if 'data_limpia' not in st.session_state:
-    st.warning("Tienes que subir el archivo CVS")
+    st.warning("Tienes que subir el archivo CSV")
     #st.stop()
 
     
@@ -31,11 +31,13 @@ try:
     # Le pasamos el DataFrame limpio que guardamos en session_state
     kpis = cm.calcular_kpis_hospitalarios(st.session_state['data_limpia'])
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     # Usamos las claves exactas que le exigimos a Carlos en el README
     col1.metric(label="Ocupación Global", value=f"{kpis['ocupacion_promedio_pct']}%")
     col2.metric(label="Camas Libres", value=kpis['camas_libres'])
     col3.metric(label="Estado de Alerta", value=kpis['estado_alerta'])
+    col4.metric(label="Gasto Total (€)", value=f"{kpis['costo_total']:,.2f}")
+
 
 except AttributeError:
     # Si Carlos aún no ha subido su función, mostramos esto:
