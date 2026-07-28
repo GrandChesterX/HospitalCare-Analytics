@@ -26,7 +26,7 @@ def cargar_y_validad_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     faltantes = [col for col in columnas_separadas if col not in df.columns]
     if faltantes:
         raise ValueError(
-            f"Contrato incumplido. Faltan las siguientes columnas "
+            f"Contrato incumplido. Faltan las siguientes columnas {faltantes}"
         )
     # 3. Regla Estricta: No nulos en la fecha
     if df["fecha_ingreso"].isna().any():
@@ -39,7 +39,7 @@ def cargar_y_validad_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
         df["camas_totales"] = df["camas_totales"].astype("int64")
         df["costo_operativo_dia"] = df["costo_operativo_dia"].astype("float64")
     except Exception as error:
-        raise ValueError(f"Contrato incumplido: Error al convertir los tipos de datos")
+        raise ValueError(f"Contrato incumplido: Error al convertir los tipos de datos {error}")
     
     # 5. Validacion de Reglas Logicas y Matematicas
     
