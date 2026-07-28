@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime
 
-def cargar_y_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
+def cargar_y_validad_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     """
     Carga y valida los registros de las camas ocupadas en el hospital desde un CSV
     o buffer.
