@@ -44,7 +44,7 @@ def cargar_y_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     # 5. Validacion de Reglas Logicas y Matematicas
     
     # - No se permiten fechas futuras
-    fecha_actual = pd.Timestamp.today().normalize()
+    fecha_actual = pd.to_datetime(datetime.today().date())
     if (df["fecha_ingreso"] > fecha_actual).any():
         raise ValueError("Contrato incumplido: Existen registros con fechas futuras.")
     
