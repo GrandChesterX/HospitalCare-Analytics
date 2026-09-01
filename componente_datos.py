@@ -12,8 +12,12 @@ def cargar_y_validar_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     """
     # 1. Ingesta: Intentar leer el archivo CSV
     try:
-        df = pd.read_csv(filepath_or_buffer, sep=',', encoding='utf-8-sig')
+        df = pd.read_csv(filepath_or_buffer, sep=';', encoding='utf-8-sig')
+        # Ejemplo para limpiar columnas numéricas si vienen con formato español
+        df['costo_operativo_dia'] = df['costo_operativo_dia'].astype(str).str.replace('.', '', regex=False).str.replace(',', '.', regex=False).astype(float)
         df.columns = df.columns.str.strip()
+        # Limpiar espacios y nulos en el área del hospital
+        df["area_hospital"] = df["area_hospital"].fillna("No especificado").astype(str).str.strip()
         import streamlit as st
         st.write("Columnas detectadas por Pandas:", df.columns.tolist())
     except Exception as error:
@@ -27,7 +31,8 @@ def cargar_y_validar_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
         "camas_totales",
         "costo_operativo_dia"
     ]
-    
+    # Elimina cualquier fila del archivo que esté completamente vacía
+    df = df.dropna(how='all')
     faltantes = [col for col in columnas_separadas if col not in df.columns]
     if faltantes:
         raise ValueError(f"Contrato incumplido. Faltan las siguientes columnas: {faltantes}")
@@ -52,7 +57,7 @@ def cargar_y_validar_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
         raise ValueError("Contrato incumplido: Existen registros con fechas futuras.")
     
     # - Valores exactos para area hospital
-    areas_validas = ["Urgencias", "UCI", "Planta"]
+    areas_validas = ["Urgencias", "Uci", "Planta"]
     if not df["area_hospital"].isin(areas_validas).all():
         raise ValueError(f"Contrato incumplido: 'area_hospital' tiene valores invalidos")
     
