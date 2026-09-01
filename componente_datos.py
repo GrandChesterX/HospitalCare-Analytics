@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime
 
-def cargar_y_validad_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
+def cargar_y_validar_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     """
     Carga y valida los registros de las camas ocupadas en el hospital desde un CSV
     o buffer.
@@ -10,7 +10,7 @@ def cargar_y_validad_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     """
     # 1. Ingesta: Intentar leer el archivo CSV
     try:
-        df = pd.read_csv(filepath_or_buffer)
+        df = pd.read_csv(filepath_or_buffer, sep=None, engine='python')
     except Exception as error:
         raise ValueError(f"Error crítico al leer el archivo CSV: {error}")
     
@@ -26,8 +26,8 @@ def cargar_y_validad_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     faltantes = [col for col in columnas_separadas if col not in df.columns]
     if faltantes:
         raise ValueError(
-            f"Contrato incumplido. Faltan las siguientes columnas {faltantes}"
-        )
+    f"Contrato incumplido. Faltan las siguientes columnas: {faltantes}" 
+    )
     # 3. Regla Estricta: No nulos en la fecha
     if df["fecha_ingreso"].isna().any():
         raise ValueError("Contrato incumplido: La columna 'fecha_ingreso' contiene valores nulos")
