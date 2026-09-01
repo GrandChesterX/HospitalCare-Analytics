@@ -30,7 +30,7 @@ def cargar_y_validar_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     )
     # 3. Regla Estricta: No nulos en la fecha
     if df["fecha_ingreso"].isna().any():
-        raise ValueError("Contrato incumplido: La columna 'fecha_ingreso' contiene valores nulos")
+        raise ValueError("Contrato incumplido: La columna fecha_ingreso contiene valores nulos")
     
     try:
         df["fecha_ingreso"] = pd.to_datetime(df["fecha_ingreso"])
