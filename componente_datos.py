@@ -1,3 +1,5 @@
+from turtle import st
+
 import pandas as pd
 from datetime import datetime
 
@@ -10,7 +12,10 @@ def cargar_y_validar_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     """
     # 1. Ingesta: Intentar leer el archivo CSV
     try:
-        df = pd.read_csv(filepath_or_buffer, sep=None, engine='python')
+        df = pd.read_csv(filepath_or_buffer, sep=',', encoding='utf-8-sig')
+        df.columns = df.columns.str.strip()
+        import streamlit as st
+        st.write("Columnas detectadas por Pandas:", df.columns.tolist())
     except Exception as error:
         raise ValueError(f"Error crítico al leer el archivo CSV: {error}")
     
@@ -25,9 +30,7 @@ def cargar_y_validar_datos_hospital(filepath_or_buffer) -> pd.DataFrame:
     
     faltantes = [col for col in columnas_separadas if col not in df.columns]
     if faltantes:
-        raise ValueError(
-    f"Contrato incumplido. Faltan las siguientes columnas: {faltantes}" 
-    )
+        raise ValueError(f"Contrato incumplido. Faltan las siguientes columnas: {faltantes}")
     # 3. Regla Estricta: No nulos en la fecha
     if df["fecha_ingreso"].isna().any():
         raise ValueError("Contrato incumplido: La columna fecha_ingreso contiene valores nulos")
