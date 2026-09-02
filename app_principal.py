@@ -15,11 +15,23 @@ with st.sidebar:
     
 if archivo_subido is not None:
     try:
-        st.session_state['data_limpia'] = cd.cargar_y_validar_datos_hospital(archivo_subido)
+        # Creamos un contenedor vacío para atrapar la basura visual
+        contenedor_trampa = st.empty()
+        
+        # Ejecutamos la función dentro del contenedor
+        with contenedor_trampa:
+            st.session_state['data_limpia'] = cd.cargar_y_validar_datos_hospital(archivo_subido)
+            
+        # Vaciamos el contenedor, borrando el texto que inyectó el componente
+        contenedor_trampa.empty() 
+        
     except ValueError as e:
         st.error(f"❌ Error en los datos: {e}")
 else:
     st.info("Porfavor sube el archivo CSV")
+
+    st.info("Por favor sube el archivo CSV")
+
 
 
 if 'data_limpia' not in st.session_state:
@@ -51,10 +63,13 @@ st.subheader("📈 Proyección de Demanda (Próximos 7 días)")
 
 
 try:
-    # Le pasamos el DataFrame limpio a la función de Milán
-    predicciones = cp.predecir_demanda_camas(st.session_state['data_limpia'])
+    # 1. Instanciamos la clase del motor predictivo
+    motor = cp.MotorPredictivo()
     
-    # Convertimos la lista de Milán en un DataFrame pequeño para graficar
+    # 2. Le pasamos el DataFrame limpio al método de la clase
+    predicciones = motor.predecir_demanda_camas(st.session_state['data_limpia'])
+    
+    # Convertimos la lista en un DataFrame pequeño para graficar
     df_prediccion = pd.DataFrame(predicciones, columns=["Camas Requeridas"])
     df_prediccion.index = range(1, len(predicciones) + 1) # Nombramos los días del 1 al 7
     
@@ -62,8 +77,6 @@ try:
     st.line_chart(df_prediccion)
 
 except AttributeError:
-    # Si Milán aún no ha subido su función
-    st.info("⏳ Esperando el motor predictivo de demanda (Milán)...")
+    st.info("⏳ Esperando el motor predictivo de demanda...")
 except Exception as e:
-    # Si hay algún error dentro de la función de Milán
     st.error(f"❌ Error al calcular la predicción: {e}")
